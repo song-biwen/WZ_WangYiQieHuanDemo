@@ -119,9 +119,9 @@ static NSInteger const labelTag = 100;
     
     //当前的字体变大，颜色变红
     if (index+ 1 < self.array.count) {
-        [self.contentView setScale:scale forIndex:index+1];
+        [self.contentView setScale:scale forIndex:index+1 isTapGesture:NO];
     }
-    [self.contentView setScale:1-scale forIndex:index];
+    [self.contentView setScale:1-scale forIndex:index isTapGesture:NO];
     
 }
 @end

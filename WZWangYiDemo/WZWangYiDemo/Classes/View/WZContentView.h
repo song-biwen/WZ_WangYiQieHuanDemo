@@ -15,5 +15,5 @@
 @interface WZContentView : UIView
 @property (nonatomic, strong) NSArray *channels;
 @property (nonatomic, assign) id<WZContentViewDelegate> delegate;
-- (void)setScale:(CGFloat)scale forIndex:(NSInteger)index;
+- (void)setScale:(CGFloat)scale forIndex:(NSInteger)index isTapGesture:(BOOL)isTapGesture;
 @end

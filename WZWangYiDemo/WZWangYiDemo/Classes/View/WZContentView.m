@@ -47,7 +47,7 @@
     self.scrollView.contentSize = CGSizeMake(oraginX, height);
     
     //默认第一个为选中状态
-    [self setScale:1 forIndex:0];
+    [self setScale:1 forIndex:0 isTapGesture:NO];
 }
 
 
@@ -66,9 +66,9 @@
     [UIView animateWithDuration:0.25 animations:^{
         for (int i = 0; i < self.scrollView.subviews.count; i ++) {
             if (i != index) {
-                [self setScale:0 forIndex:i];
+                [self setScale:0 forIndex:i isTapGesture:YES];
             }else {
-                [self setScale:1 forIndex:i];
+                [self setScale:1 forIndex:i isTapGesture:YES];
             }
         }
     }];
@@ -90,12 +90,14 @@
     return _scrollView;
 }
 
-- (void)setScale:(CGFloat)scale forIndex:(NSInteger)index {
+- (void)setScale:(CGFloat)scale forIndex:(NSInteger)index isTapGesture:(BOOL)isTapGesture {
     UILabel *label = self.scrollView.subviews[index];
     label.textColor = [UIColor colorWithRed:scale green:0 blue:0 alpha:1];
     CGFloat fontSize = 14 + (18-14) * scale;
     label.transform = CGAffineTransformMakeScale(fontSize/14, fontSize/14);
-    [self scrollToCenter:label];
+    if (!isTapGesture) {
+         [self scrollToCenter:label];
+    }
 }
 
 
