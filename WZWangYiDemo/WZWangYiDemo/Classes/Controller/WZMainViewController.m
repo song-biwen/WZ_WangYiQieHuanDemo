@@ -80,7 +80,11 @@ static NSInteger const labelTag = 100;
 #pragma mark - WZContentViewDelegate
 - (void)contentView:(WZContentView *)contentView didSelectItemAtIndex:(NSInteger)index {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    
+    self.collectionView.delegate = nil;
     [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    self.collectionView.delegate = self;
+    
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -112,9 +116,12 @@ static NSInteger const labelTag = 100;
     CGFloat ratio = offsetX/width;
     NSInteger index = ratio/1;
     CGFloat scale = ratio - index;
-    NSLog(@"....ratio: %f....,....index: %d....,...scale: %f...",ratio,index,scale);
     
-    [self.contentView setScale:scale forIndex:index+1];
+    //当前的字体变大，颜色变红
+    if (index+ 1 < self.array.count) {
+        [self.contentView setScale:scale forIndex:index+1];
+    }
     [self.contentView setScale:1-scale forIndex:index];
+    
 }
 @end

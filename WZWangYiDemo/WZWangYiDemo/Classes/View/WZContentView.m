@@ -32,7 +32,7 @@
         frame.size.height = self.frame.size.height;
         label.frame = frame;
         label.font = [UIFont systemFontOfSize:14];
-        label.textColor = [UIColor brownColor];
+        label.textColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
         oraginX += label.frame.size.width + 10;
         
         //label添加点击事件
@@ -40,16 +40,14 @@
         [label addGestureRecognizer:tapGesture];
         label.userInteractionEnabled = YES;
         
-        if (i == 0) {
-            label.font = [UIFont systemFontOfSize:18];
-            label.textColor = [UIColor redColor];
-        }
-        
         [self.scrollView addSubview:label];
        
     }
     
     self.scrollView.contentSize = CGSizeMake(oraginX, height);
+    
+    //默认第一个为选中状态
+    [self setScale:1 forIndex:0];
 }
 
 
@@ -65,22 +63,17 @@
         [self.delegate contentView:self didSelectItemAtIndex:index];
     }
     
-    [self setScale:1.0 forIndex:index];
-//    //点击的label，字体颜色变红，字体变大
-//    for (int i = 0; i < self.scrollView.subviews.count; i ++) {
-//        UILabel *label = self.scrollView.subviews[i];
-//        if (i == index) {
-//            
-//            [UIView animateWithDuration:0.25 animations:^{
-//                label.textColor = [UIColor redColor];
-//                label.font = [UIFont systemFontOfSize:18];
-//            }];
-//            
-//        }else {
-//            label.textColor = [UIColor brownColor];
-//            label.font = [UIFont systemFontOfSize:14];
-//        }
-//    }
+    [UIView animateWithDuration:0.25 animations:^{
+        for (int i = 0; i < self.scrollView.subviews.count; i ++) {
+            if (i != index) {
+                [self setScale:0 forIndex:i];
+            }else {
+                [self setScale:1 forIndex:i];
+            }
+        }
+    }];
+    
+    [self scrollToCenter:tapGesture.view];
 }
 
 - (UIScrollView *)scrollView {
@@ -102,5 +95,27 @@
     label.textColor = [UIColor colorWithRed:scale green:0 blue:0 alpha:1];
     CGFloat fontSize = 14 + (18-14) * scale;
     label.transform = CGAffineTransformMakeScale(fontSize/14, fontSize/14);
+    [self scrollToCenter:label];
+}
+
+
+/**
+ 滚动到中心点位置
+
+ @param view <#view description#>
+ */
+- (void)scrollToCenter:(UIView *)view {
+    
+    CGFloat offsetX = CGRectGetMidX(view.frame) - self.frame.size.width * 0.5;
+    CGFloat maxOffsetX = self.scrollView.contentSize.width - self.frame.size.width;
+    if (offsetX < 0) {
+        offsetX = 0;
+    }
+    
+    if (offsetX > maxOffsetX) {
+        offsetX = maxOffsetX;
+    }
+    NSLog(@"%f",offsetX);
+    [self.scrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
 }
 @end
