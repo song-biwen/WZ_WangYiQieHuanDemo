@@ -13,7 +13,7 @@ static NSString *const cellIndentifier = @"Cell";
 static NSInteger const labelTag = 100;
 
 @interface WZMainViewController ()
-<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,WZContentViewDelegate>
 //数据
 @property (nonatomic, strong) NSArray *array;
 //collectionView
@@ -37,6 +37,7 @@ static NSInteger const labelTag = 100;
 //添加内容
 - (void)setupContentView {
     WZContentView *contentView = [[WZContentView alloc] initWithFrame:CGRectMake(0, 20, self.view.frame.size.width, 35)];
+    contentView.delegate = self;
     contentView.channels = self.array;
     [self.view addSubview:contentView];
     self.contentView = contentView;
@@ -75,6 +76,13 @@ static NSInteger const labelTag = 100;
     }
     return _collectionView;
 }
+
+#pragma mark - WZContentViewDelegate
+- (void)contentView:(WZContentView *)contentView didSelectItemAtIndex:(NSInteger)index {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+}
+
 #pragma mark - UICollectionViewDelegate
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -83,19 +91,30 @@ static NSInteger const labelTag = 100;
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:cellIndentifier forIndexPath:indexPath];
-    cell.contentView.backgroundColor = [UIColor brownColor];
+    cell.contentView.backgroundColor = [UIColor colorWithRed:arc4random_uniform(255)/255.0 green:arc4random_uniform(255)/255.0 blue:arc4random_uniform(255)/255.0 alpha:1];
     UILabel *label = [cell.contentView viewWithTag:labelTag];
     if (label == nil) {
         label = [[UILabel alloc] init];
         label.tag = labelTag;
-        label.font = [UIFont systemFontOfSize:18];
+        label.font = [UIFont systemFontOfSize:24];
         label.textColor = [UIColor redColor];
         [cell.contentView addSubview:label];
-        label.center = CGPointMake(CGRectGetMidX(cell.contentView.frame),CGRectGetMidY(cell.contentView.frame));
     }
     label.text = self.array[indexPath.row];
     [label sizeToFit];
+    label.center = CGPointMake(CGRectGetMidX(cell.contentView.frame),CGRectGetMidY(cell.contentView.frame));
     return cell;
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat width = self.collectionView.frame.size.width;
+    CGFloat offsetX = scrollView.contentOffset.x;
+    CGFloat ratio = offsetX/width;
+    NSInteger index = ratio/1;
+    CGFloat scale = ratio - index;
+    NSLog(@"....ratio: %f....,....index: %d....,...scale: %f...",ratio,index,scale);
+    
+    [self.contentView setScale:scale forIndex:index+1];
+    [self.contentView setScale:1-scale forIndex:index];
+}
 @end
